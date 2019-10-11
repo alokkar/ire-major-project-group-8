@@ -10,6 +10,8 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.svm import SVC
+from sklearn.metrics import f1_score, precision_score, recall_score
+
 stemmer = SnowballStemmer('english')
 stem_map={}
 
@@ -59,7 +61,7 @@ def preprocess(tweet):
 	return ' '.join(stemmed_text_token)
 
 def classifier(data,labels):
-	
+	X_train,X_test,y_train,y_test = data[:3400],data[:383],labels[:3400],labels[:383]
 	text_clf = Pipeline([('vect', CountVectorizer()),
 					 ('tfidf', TfidfTransformer()),
 					 ('clf', MultinomialNB())])
@@ -72,9 +74,16 @@ def classifier(data,labels):
 	}
 	text_clf.fit(X_train,y_train)
 	prediction = text_clf.predict(X_test)
-	score = text_clf.score(X_test,y_test)
-	print(prediction) 
-	print(score)
+	accuracy_score = text_clf.score(X_test,y_test)
+	print("Accuracy : ",accuracy_score) #accuracy score
+	print("f1_score : ",f1_score(y_test, prediction, average="macro")) #f1_score
+	print("Precision : ",precision_score(y_test, prediction, average="macro")) #precision_score
+	print("Recall : ",recall_score(y_test, prediction, average="macro")) #recall_score
+	print("---------------Example---------------")
+	print("Statement : i will kill all the immigrants")
+	print(text_clf.predict(["i will kill all the immigrants"])) 
+	print("Statement : i will kiss all the immigrants")
+	print(text_clf.predict(["i will kiss all the immigrants"])) 
 
 
 def main():
@@ -89,13 +98,14 @@ def main():
 	count = 0
 	for index,word in enumerate(labels_HS):
 		if word:
-			X.append(raw_data[index])
+			X.append(data[index])
 			y_AG.append(labels_AG[index]) 
 			y_TR.append(labels_TR[index])
 			count += 1
 
-	print(count)	
-	classifier(data,labels_AG)
+	# print(count)
+
+	classifier(X,y_AG)
 
 	# print(labels_AG[:100])
 
