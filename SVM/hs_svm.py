@@ -5,12 +5,14 @@ from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 import re
 
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.svm import SVC
+from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn import metrics
 
 stemmer = SnowballStemmer('english')
 stem_map={}
@@ -61,24 +63,31 @@ def preprocess(tweet):
 	return ' '.join(stemmed_text_token)
 
 def classifier(data,labels):
-	X_train,X_test,y_train,y_test = data[:3400],data[:383],labels[:3400],labels[:383]
-	text_clf = Pipeline([('vect', CountVectorizer()),
-					 ('tfidf', TfidfTransformer()),
-					 ('clf', MultinomialNB())])
+	X_train,X_test,y_train,y_test = data[:3400],data[-383:],labels[:3400],labels[-383:]
+	text_clf = Pipeline([('vect', CountVectorizer(ngram_range=(1, 2))),
+					 ('tfidf', TfidfTransformer(use_idf=False,norm='l2')),
+					 ('clf', SGDClassifier(loss='hinge', penalty='l2',
+						   alpha=1e-3, random_state=42,
+						   max_iter=5, tol=None))]) # After applying grid_search on the tunable parameters and using the best values
 
-	tuned_parameters = {
-		'vect__ngram_range': [(1, 1), (1, 2), (2, 2)],
+	parameters = {
+   'vect__ngram_range': [(1, 1), (1, 2),(2,2)],
 		'tfidf__use_idf': (True, False),
 		'tfidf__norm': ('l1', 'l2'),
-		'clf__alpha': [1, 1e-1, 1e-2]
+		'clf__alpha': [10,1, 1e-1, 1e-2,1e-3]
 	}
+	# gs_clf = GridSearchCV(text_clf, parameters, cv=5, iid=False, n_jobs=-1)
+	# gs_clf = gs_clf.fit(X_train, y_train)
+	# print(gs_clf.best_score_)
+	# for param_name in sorted(parameters.keys()):
+	# 	print("%s: %r" % (param_name, gs_clf.best_params_[param_name]))
 	text_clf.fit(X_train,y_train)
 	prediction = text_clf.predict(X_test)
 	accuracy_score = text_clf.score(X_test,y_test)
 	print("Accuracy : ",accuracy_score) #accuracy score
 	print("f1_score : ",f1_score(y_test, prediction, average="macro")) #f1_score
 	print("Precision : ",precision_score(y_test, prediction, average="macro")) #precision_score
-	print("Recall : ",recall_score(y_test, prediction, average="macro")) #recall_score
+	print("Recall : ",recall_score(y_test, prediction,average="macro")) #recall_score
 	print("---------------Example---------------")
 	print("Statement : i will kill all the immigrants")
 	print(text_clf.predict(["i will kill all the immigrants"])) 
