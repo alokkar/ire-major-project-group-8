@@ -1,2 +1,0 @@
-To run the code:
-$ python3 nb_cls.py train_en.tsv

@@ -27,12 +27,23 @@ emoji_pattern = re.compile("["
 
 def load_data(filename):
 	n = ['id', 'text','HS','TR','AG']
-	given_data = pd.read_csv(filename, sep='\t',error_bad_lines=False, names=n, usecols=['text','TR','AG'], skiprows=1)
+	given_data = pd.read_csv(filename, sep='\t',error_bad_lines=False, names=n, usecols=['text','HS','TR','AG'], skiprows=1)
 	raw_data = given_data['text'].values
+	labels_HS = list(map(int,given_data['HS'].values))
 	labels_TR = list(map(int,given_data['TR'].values))
 	labels_AG = list(map(int,given_data['AG'].values))
 
-	return raw_data,labels_TR,labels_AG
+	data=[]
+	y_tr=[]
+	y_ag=[]
+
+	for i,val in enumerate(labels_HS):
+		if val:
+			data.append(raw_data[i])
+			y_tr.append(labels_TR[i])
+			y_ag.append(labels_AG[i])
+
+	return data,y_tr,y_ag
 
 def preprocess(tweet):
 	# ' '.join([word for word in tweet.spilt() ])
@@ -61,25 +72,17 @@ def preprocess(tweet):
 	return ' '.join(stemmed_text_token)
 
 def classifier(data,labels):
-	text_clf = Pipeline([('vect', CountVectorizer()),
-					 ('tfidf', TfidfTransformer()),
-					 ('clf', MultinomialNB())])
-	tuned_parameters = {
-		'vect__ngram_range': [(1, 1), (1, 2), (2, 2), (1, 3), (2, 3), (3, 3), (1, 4), (2, 4), (4, 4), (4, 4)],
-		'tfidf__use_idf': (True, False),
-		'tfidf__norm': ('l1', 'l2'),
-		'clf__alpha': [1, 1e-1, 1e-2, 1e-3]
-	}
+	text_clf = Pipeline([('vect', CountVectorizer(ngram_range=(1,2))),
+					 ('tfidf', TfidfTransformer(use_idf=False,norm='l2')),
+					 ('clf', MultinomialNB(alpha=0.1))])
 
 	x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.01, random_state=324)
 
-	score='f1_macro'
-	clf = GridSearchCV(text_clf, tuned_parameters,cv=10,scoring=score)
 	print("Training Start")
-	clf.fit(x_train, y_train)
+	text_clf.fit(x_train,y_train)
 	print("Training Complete")
 
-	return clf
+	return text_clf
 
 def testAG(file,clf):
 	raw_data,labels_TR,labels_AG = load_data(file)
@@ -107,38 +110,14 @@ def main():
 
 	data = [preprocess(tweet) for tweet in raw_data]
 
-	# classifier(data,labels_AG)
-
-	ind_tr = [] #individual target
-	grp_tr = [] #group target
-	agg_ag = [] #aggressive
-	nag_ag = [] #Non aggressive
-	for (text,ltr,lag) in zip(data,labels_TR,labels_AG):
-		if ltr==1:
-			ind_tr.append(text)
-		if ltr==0:
-			grp_tr.append(text)
-		if lag==1:
-			agg_ag.append(text)
-		if lag==0:
-			nag_ag.append(text)
-
-	size_tr = min(len(ind_tr),len(grp_tr))
-	size_ag = min(len(agg_ag),len(nag_ag))
-
-	f_data_tr = np.concatenate((ind_tr[:size_tr],grp_tr[:size_tr]),axis=0)
-	f_data_ag = np.concatenate((agg_ag[:size_ag],nag_ag[:size_ag]),axis=0)
-
-	label_tr = [1]*size_tr +[0]*size_tr
-	label_ag = [1]*size_ag +[0]*size_ag
-
-	clf_t1 = classifier(f_data_ag,label_ag)
-	clf_t2 = classifier(f_data_tr,label_tr)
+	clf_ag=classifier(data,labels_AG)
+	clf_tr=classifier(data,labels_TR)
 
 	test_file = 'dev_en.tsv'
 
-	testAG(test_file,clf_t1)
-	testTR(test_file,clf_t2)
+	testAG(test_file,clf_ag)
+	testTR(test_file,clf_tr)
+
 
 if __name__=='__main__':
 	main()
