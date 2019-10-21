@@ -13,6 +13,7 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn import metrics
+from sklearn.feature_extraction.text import HashingVectorizer
 
 stemmer = SnowballStemmer('english')
 stem_map={}
@@ -70,6 +71,18 @@ def classifier(data,labels):
 						   alpha=1e-3, random_state=42,
 						   max_iter=5, tol=None))]) # After applying grid_search on the tunable parameters and using the best values
 
+	
+
+	###############Using hashing vectorizer#######################
+	# maxLen = len(max(X_train, key=len))
+	
+	# text_clf = Pipeline([('vect', HashingVectorizer(n_features=2048)),
+	# 				 ('tfidf', TfidfTransformer(use_idf=False,norm='l2')),
+	# 				 ('clf', SGDClassifier(loss='hinge', penalty='l2',
+	# 					   alpha=1e-3, random_state=42,
+	# 					   max_iter=5, tol=None))])
+
+
 	parameters = {
    'vect__ngram_range': [(1, 1), (1, 2),(2,2)],
 		'tfidf__use_idf': (True, False),
@@ -114,7 +127,7 @@ def main():
 
 	# print(count)
 
-	classifier(X,y_AG)
+	classifier(X,y_TR)
 
 	# print(labels_AG[:100])
 
