@@ -8,7 +8,7 @@ python3 analysis.py file_name
 
 
 #data analyiss on these features:
-lenght : effect of lenght on the models
+lenght : effect of lenght on the models : done
 number of mentions
 emojis
 
