@@ -104,8 +104,8 @@ def testTR(file,clf):
 
 
 def main():
-
-	filename = sys.argv[1]
+	print("-----------------Original Dataset-----------------")
+	filename = 'train_en.tsv'
 	raw_data,labels_TR,labels_AG = load_data(filename)
 
 	data = [preprocess(tweet) for tweet in raw_data]
@@ -118,6 +118,16 @@ def main():
 	testAG(test_file,clf_ag)
 	testTR(test_file,clf_tr)
 
+	for degree in range(3):
+		print("--------------Dataset*{}-----------------".format(degree+2))
+		filename = '../../data_degree_{}.tsv'.format(degree)
+		raw_data, labels_TR, labels_AG = load_data(filename)
+		data = [preprocess(tweet) for tweet in raw_data]
+		clf_ag = classifier(data, labels_AG)
+		clf_tr = classifier(data, labels_TR)
+
+		testAG(test_file, clf_ag)
+		testTR(test_file, clf_tr)
 
 if __name__=='__main__':
 	main()
