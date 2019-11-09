@@ -7,10 +7,10 @@ python3 analysis.py file_name
 
 
 
-#data analyiss on these features:
-lenght : effect of lenght on the models : done
+#data analyiss on these features: DONE!
+lenght : effect of lenght on the models
 number of mentions
 emojis
 
-vocab size : 52844
-error analysis: FP, FN
+vocab size : 9629
+error analysis: FP, FN DONE!
