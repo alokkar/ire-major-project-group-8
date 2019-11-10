@@ -12,7 +12,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import SGDClassifier
-from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 from sklearn import metrics
 from sklearn.feature_extraction.text import HashingVectorizer
 
@@ -131,17 +131,19 @@ def test(filename, clf_AG, clf_TR):
 	prediction_TR = clf_TR.predict(X)
 	f1_ag = f1_score(y_AG, prediction_AG, average="macro")
 	f1_tr = f1_score(y_TR, prediction_TR, average="macro")
+	acc_ag = accuracy_score(y_AG, prediction_AG)
+	acc_tr = accuracy_score(y_TR, prediction_TR)
 	print("-----------Aggressive Task------------")
-	print("Accuracy : ",clf_AG.score(X, y_AG)) #accuracy score
+	print("Accuracy : ",acc_ag) #accuracy score
 	print("f1_score : ",f1_ag) #f1_score
 	print("Precision : ",precision_score(y_AG, prediction_AG, average="macro")) #precision_score
 	print("Recall : ",recall_score(y_AG, prediction_AG,average="macro")) #recall_score
 	print("------------Target Task-------------")
-	print("Accuracy : ",clf_TR.score(X, y_TR)) #accuracy score
+	print("Accuracy : ",acc_tr) #accuracy score
 	print("f1_score : ",f1_tr) #f1_score
 	print("Precision : ",precision_score(y_TR, prediction_TR, average="macro")) #precision_score
 	print("Recall : ",recall_score(y_TR, prediction_TR,average="macro")) #recall_score
-	return f1_ag, f1_tr
+	return acc_ag, acc_tr
 
 def make_plot(results_eda, results_tr, plot_title, yrange):
     x = range(1,5)
@@ -149,7 +151,7 @@ def make_plot(results_eda, results_tr, plot_title, yrange):
     plt.plot(x, results_tr)
     plt.xticks(x, x)
     plt.xlabel("Size of Dataset")
-    plt.ylabel("F1 score")
+    plt.ylabel("Accuracy")
     plt.ylim(yrange[0], yrange[1])
     plt.title(plot_title)
     plt.legend(['EDA', 'Machine Translation'])
@@ -165,11 +167,11 @@ def main():
 
 	print("=====================================================")
 	print("Original Dataset")
-	f1_ag, f1_tr = test(test_file, clf_AG, clf_TR)
-	transl_ag = [f1_ag]
-	transl_tr = [f1_tr]
-	eda_ag = [f1_ag]
-	eda_tr = [f1_tr]
+	accuracy_ag, accuracy_tr = test(test_file, clf_AG, clf_TR)
+	transl_ag = [accuracy_ag]
+	transl_tr = [accuracy_tr]
+	eda_ag = [accuracy_ag]
+	eda_tr = [accuracy_tr]
 
 	print("=====================================================")
 	print("Data Augmentation using EDA technique")
@@ -179,9 +181,9 @@ def main():
 		X, y_AG, y_TR = get_vars('../Dataset/eda_aug/data_degree_{}.tsv'.format(degree+2))
 		clf_AG = classifier(X, y_AG)
 		clf_TR = classifier(X, y_TR)
-		f1_ag, f1_tr = test(test_file, clf_AG, clf_TR)
-		eda_ag.append(f1_ag)
-		eda_tr.append(f1_tr)
+		accuracy_ag, accuracy_tr = test(test_file, clf_AG, clf_TR)
+		eda_ag.append(accuracy_ag)
+		eda_tr.append(accuracy_tr)
 
 	print("=====================================================")
 	print("Data Augmentation using Machine Translation")
@@ -191,12 +193,12 @@ def main():
 		X, y_AG, y_TR = get_vars('../Dataset/transl_aug/data_degree_{}.tsv'.format(degree+2))
 		clf_AG = classifier(X, y_AG)
 		clf_TR = classifier(X, y_TR)
-		f1_ag, f1_tr = test(test_file, clf_AG, clf_TR)
-		transl_ag.append(f1_ag)
-		transl_tr.append(f1_tr)
+		accuracy_ag, accuracy_tr = test(test_file, clf_AG, clf_TR)
+		transl_ag.append(accuracy_ag)
+		transl_tr.append(accuracy_tr)
 
-	make_plot(eda_ag, transl_ag, "Aggression results after data augmentation", [0.55, 0.6])
-	make_plot(eda_tr, transl_tr, "Target results after data augmentation", [0.88, 0.91])
+	make_plot(eda_ag, transl_ag, "Aggression results after data augmentation", [0.6, 0.63])
+	make_plot(eda_tr, transl_tr, "Target results after data augmentation", [0.88, 0.9])
 
 
 if __name__=='__main__':
