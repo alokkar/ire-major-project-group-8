@@ -1,15 +1,16 @@
 import sys,os
 import pandas as pd
 import numpy as np
+import re
+import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
-import re
 
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, f1_score
 
 
 stemmer = SnowballStemmer('english')
@@ -89,23 +90,40 @@ def testAG(file,clf):
 
 	data = [preprocess(tweet) for tweet in raw_data]
 
-	x_train, x_test, y_train, y_test = train_test_split(data, labels_AG, test_size=0.99, random_state=953)
+	x_test = data
+	y_test = labels_AG
 
 	print(classification_report(y_test, clf.predict(x_test), digits=4))	
+	return f1_score(y_test, clf.predict(x_test), average='macro')
 
 def testTR(file,clf):
 	raw_data,labels_TR,labels_AG = load_data(file)
 
 	data = [preprocess(tweet) for tweet in raw_data]
 
-	x_train, x_test, y_train, y_test = train_test_split(data, labels_TR, test_size=0.99, random_state=953)
+	x_test = data
+	y_test = labels_TR
 
-	print(classification_report(y_test, clf.predict(x_test), digits=4))	
+	print(classification_report(y_test, clf.predict(x_test), digits=4))
+	return f1_score(y_test, clf.predict(x_test), average='macro')
 
+def make_plot(results_eda, results_tr, plot_title, yrange):
+    x = range(1,5)
+    plt.plot(x, results_eda)
+    plt.plot(x, results_tr)
+    plt.xticks(x, x)
+    plt.xlabel("Size of Dataset")
+    plt.ylabel("F1 score")
+    plt.ylim(yrange[0], yrange[1])
+    plt.title(plot_title)
+    plt.legend(['EDA', 'Machine Translation'])
+    plt.show()
 
 def main():
-	print("-----------------Original Dataset-----------------")
-	filename = 'train_en.tsv'
+	print("=====================================================")
+	print("Original Data")
+	print()
+	filename = '../../Dataset/train_en.tsv'
 	raw_data,labels_TR,labels_AG = load_data(filename)
 
 	data = [preprocess(tweet) for tweet in raw_data]
@@ -113,21 +131,48 @@ def main():
 	clf_ag=classifier(data,labels_AG)
 	clf_tr=classifier(data,labels_TR)
 
-	test_file = 'dev_en.tsv'
+	test_file = '../../Dataset/dev_en.tsv'
 
-	testAG(test_file,clf_ag)
-	testTR(test_file,clf_tr)
+	f1_ag = testAG(test_file,clf_ag)
+	f1_tr = testTR(test_file,clf_tr)
+	transl_ag = [f1_ag]
+	transl_tr = [f1_tr]
+	eda_ag = [f1_ag]
+	eda_tr = [f1_tr]
 
+	print("=====================================================")
+	print("Data Augmentation using EDA technique")
 	for degree in range(3):
-		print("--------------Dataset*{}-----------------".format(degree+2))
-		filename = '../../data_degree_{}.tsv'.format(degree)
+		print("Dataset*{}".format(degree+2))
+		filename = '../../Dataset/eda_aug/data_degree_{}.tsv'.format(degree+2)
 		raw_data, labels_TR, labels_AG = load_data(filename)
 		data = [preprocess(tweet) for tweet in raw_data]
 		clf_ag = classifier(data, labels_AG)
 		clf_tr = classifier(data, labels_TR)
 
-		testAG(test_file, clf_ag)
-		testTR(test_file, clf_tr)
+		f1_ag = testAG(test_file, clf_ag)
+		f1_tr = testTR(test_file, clf_tr)
+		eda_ag.append(f1_ag)
+		eda_tr.append(f1_tr)
+
+	print("=====================================================")
+	print("Data Augmentation using Machine Translation")
+	for degree in range(3):
+		print("Dataset*{}".format(degree+2))
+		filename = '../../Dataset/transl_aug/data_degree_{}.tsv'.format(degree+2)
+		raw_data, labels_TR, labels_AG = load_data(filename)
+		data = [preprocess(tweet) for tweet in raw_data]
+		clf_ag = classifier(data, labels_AG)
+		clf_tr = classifier(data, labels_TR)
+
+		f1_ag = testAG(test_file, clf_ag)
+		f1_tr = testTR(test_file, clf_tr)
+		transl_ag.append(f1_ag)
+		transl_tr.append(f1_tr)
+
+	make_plot(eda_ag, transl_ag, "Aggression results after data augmentation", [0.6, 0.65])
+	make_plot(eda_tr, transl_tr, "Target results after data augmentation", [0.85, 0.9])
+
 
 if __name__=='__main__':
 	main()
