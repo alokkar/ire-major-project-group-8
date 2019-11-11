@@ -217,35 +217,35 @@ def testTR(file,clf,em,m):
 
 	print(classification_report(y_test, clf.predict(x_test), digits=4))	
 
-def error_analysis(file,clf,em,m):
-	raw_data,lh,labels_TR,labels_AG = load_data(file)
+# def error_analysis(file,clf,em,m):
+# 	raw_data,lh,labels_TR,labels_AG = load_data(file)
 
-	data = [preprocess(tweet,em,m) for tweet in raw_data]
+# 	data = [preprocess(tweet,em,m) for tweet in raw_data]
 
-	x_train, x_test, y_train, y_test = train_test_split(data, labels_TR, test_size=0.99, random_state=953)
+# 	x_train, x_test, y_train, y_test = train_test_split(data, labels_TR, test_size=0.99, random_state=953)
 
-	y_pred=clf.predict(x_test)
+# 	y_pred=clf.predict(x_test)
 
-	TP = []
-    FP = []
-    TN = []
-    FN = []
+# 	TP = []
+#     FP = []
+#     TN = []
+#     FN = []
 
-    for i in range(len(y_pred)): 
-        if y_test[i]==y_pred[i]==1:
-           TP.append(x_test[i])
-        if y_pred[i]==1 and y_test[i]!=y_pred[i]:
-           FP.append(x_test[i])
-        if y_test[i]==y_pred[i]==0:
-           TN.append(x_test[i])
-        if y_pred[i]==0 and y_test[i]!=y_pred[i]:
-           FN.append(x_test[i])
-    print(TP)
-    print(FP)
-    print(TN)
-    print(FN)
+#     for i in range(len(y_pred)): 
+#         if y_test[i]==y_pred[i]==1:
+#            TP.append(x_test[i])
+#         if y_pred[i]==1 and y_test[i]!=y_pred[i]:
+#            FP.append(x_test[i])
+#         if y_test[i]==y_pred[i]==0:
+#            TN.append(x_test[i])
+#         if y_pred[i]==0 and y_test[i]!=y_pred[i]:
+#            FN.append(x_test[i])
+#     print(TP)
+#     print(FP)
+#     print(TN)
+#     print(FN)
 
-    return
+#     return
 
 def lt_length_analysis(data,labels,clf,length):
 	print("Percent correct predictions for all tweets shorter than this word length ",length)
