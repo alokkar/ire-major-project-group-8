@@ -3,7 +3,7 @@ The aim of the project was to detect aggresiveness and identify targets of hate 
 
 * [Report](https://docs.google.com/document/d/1ZAeeXgH-o0BqZQQ_bXd2bU_YybnNCWLg1EuGOFda36M/edit?usp=sharing)
 
-* [Video Description]()
+* [Video Description](https://youtu.be/TAhXn-nmUN0)
 
 ## Instruction
 - To run Naive bayes classifer:
