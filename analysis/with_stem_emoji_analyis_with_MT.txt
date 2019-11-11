@@ -1,0 +1,88 @@
+With Stemming:
+
+Naive Bayes
+Task 1:
+Deg 1			emojis		no emojis
+mentions		63.12		62.25
+no mentions		63.83		63.36
+Deg 2			emojis		no emojis
+mentions		63.83		64.78
+no mentions		63.59		63.83
+Deg 3			emojis		no emojis
+mentions		61.70		64.07
+no mentions		62.65		62.88
+Deg 4			emojis		no emojis
+mentions		62.17		63.83
+no mentions		61.70		62.88
+
+Task 2:
+Deg 1			emojis		no emojis
+mentions		87.71		87.94
+no mentions		88.65		88.42
+Deg 2			emojis		no emojis
+mentions		88.65		88.89
+no mentions		88.89		89.36
+Deg 3			emojis		no emojis
+mentions		88.89		88.18
+no mentions		89.60		89.36
+Deg 4			emojis		no emojis
+mentions		88.89		88.65
+no mentions		89.36		89.36
+
+Logistic Regression
+Task 1:
+Deg 1			emojis		no emojis
+mentions		64.54		64.07
+no mentions		65.25		64.78
+Deg 2			emojis		no emojis
+mentions		67.14		66.67
+no mentions		67.38		66.19
+Deg 3			emojis		no emojis
+mentions		66.43		65.96
+no mentions		67.85		67.14
+Deg 4			emojis		no emojis
+mentions		65.96		67.83
+no mentions		66.43		67.61
+
+Task 2:
+Deg 1			emojis		no emojis
+mentions		87.94		88.42
+no mentions		87.94		87.94
+Deg 2			emojis		no emojis
+mentions		90.31		90.54
+no mentions		90.07		90.54
+Deg 3			emojis		no emojis
+mentions		91.25		90.78
+no mentions		90.78		90.78
+Deg 4			emojis		no emojis
+mentions		91.02		90.78
+no mentions		91.25		91.02
+
+SVM
+Task 1:
+Deg 1			emojis		no emojis
+mentions		61.70		62.17
+no mentions		61.70		61.70
+Deg 2			emojis		no emojis
+mentions		62.41		61.47
+no mentions		61.47		60.76
+Deg 3			emojis		no emojis
+mentions		61.70		61.70
+no mentions		61.70		61.47
+Deg 4			emojis		no emojis
+mentions		62.17		62.17
+no mentions		61.94		61.70
+
+Task 2:
+Deg 1			emojis		no emojis
+mentions		87.71		88.18
+no mentions		87.71		88.18
+Deg 2			emojis		no emojis
+mentions		87.47		88.42
+no mentions		88.18		88.42
+Deg 3			emojis		no emojis
+mentions		87.94		88.42
+no mentions		88.42		88.42
+Deg 4			emojis		no emojis
+mentions		87.94		88.89
+no mentions		88.18		88.65
