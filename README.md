@@ -1,7 +1,7 @@
 # ire-major-project-group-8
 The aim of the project was to detect aggresiveness and identify targets of hate speech. The details of the project are available in [project website](https://tanuj208.github.io).
 
-* [Report](https://docs.google.com/document/d/11BiV8JceusuAu4oxQS3dF-6KFdXlQg-w-jbZJiMngHo/edit?usp=sharing)
+* [Report](https://docs.google.com/document/d/1ZAeeXgH-o0BqZQQ_bXd2bU_YybnNCWLg1EuGOFda36M/edit?usp=sharing)
 
 * [Video Description]()
 
